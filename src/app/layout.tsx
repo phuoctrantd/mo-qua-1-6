@@ -10,17 +10,41 @@ const fredoka = Fredoka({
   weight: ["400", "500", "600", "700"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
+const siteTitle = "Golden City — Vòng quay quà 1/6";
+const siteDescription =
+  "Golden City — Vòng quay quà 1/6";
+
 export const metadata: Metadata = {
-  title: "Golden City — Vòng quay tết thiếu nhi 1/6",
-  description: "Golden City — Vòng quay tết thiếu nhi 1/6",
+  metadataBase: new URL(siteUrl),
+  title: siteTitle,
+  description: siteDescription,
   icons: {
     icon: [{ url: "/logo.png", type: "image/png" }],
     apple: "/logo.png",
   },
   openGraph: {
-    images: "/logo.png",
-    title: "Golden City — Vòng quay tết thiếu nhi 1/6",
-    description: "Golden City — Vòng quay tết thiếu nhi 1/6",
+    type: "website",
+    locale: "vi_VN",
+    url: "/",
+    siteName: "Golden City",
+    title: siteTitle,
+    description: siteDescription,
+    images: [
+      {
+        url: "/logo.png",
+        alt: "Golden City — Vòng quay quà 1/6",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+    images: ["/logo.png"],
   },
 };
 
