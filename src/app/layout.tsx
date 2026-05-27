@@ -11,8 +11,17 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: "Mở quà 1/6 — Vòng quay may mắn",
-  description: "Vòng quay may mắn cho các cháu thiếu nhi",
+  title: "Golden City — Vòng quay tết thiếu nhi 1/6",
+  description: "Golden City — Vòng quay tết thiếu nhi 1/6",
+  icons: {
+    icon: [{ url: "/logo.png", type: "image/png" }],
+    apple: "/logo.png",
+  },
+  openGraph: {
+    images: "/logo.png",
+    title: "Golden City — Vòng quay tết thiếu nhi 1/6",
+    description: "Golden City — Vòng quay tết thiếu nhi 1/6",
+  },
 };
 
 export default function RootLayout({
