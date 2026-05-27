@@ -1,7 +1,7 @@
 "use client";
 
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { GiftSegment } from "@/lib/types";
 
 const SLICE_COLORS = [
@@ -211,7 +211,8 @@ export function SpinWheel({
     spinning && !instantReset
       ? `transform ${SPIN_DURATION_MS}ms cubic-bezier(0.12, 0.85, 0.22, 1)`
       : "none";
-  const spinTransform = `rotate(${rotation}deg)`;
+  // rotate3d + will-change helps iOS Safari actually animate the spin.
+  const spinTransform = `rotate3d(0, 0, 1, ${rotation}deg)`;
 
   /** Survives Strict Mode re-run so we don't double-count extra turns. */
   const spinTargetRotationRef = useRef<number | null>(null);
@@ -234,7 +235,7 @@ export function SpinWheel({
     }
   }, [spinning]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!spinning || !winningGiftName) return;
 
     const idx = segments.findIndex(
@@ -268,12 +269,30 @@ export function SpinWheel({
       spinTargetRotationRef.current = next;
     }
 
-    rotationRef.current = next;
-    setRotation(next);
+    // Safari iOS skips CSS transition if the final transform is set before first paint.
+    let cancelled = false;
+    let timerId: number | undefined;
+    let raf2 = 0;
 
-    const timer = window.setTimeout(() => onSettled?.(), SPIN_DURATION_MS + 80);
-    return () => window.clearTimeout(timer);
-  }, [spinning, winningGiftName, segments, slice, onSettled]);
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        if (cancelled) return;
+        rotationRef.current = next!;
+        setRotation(next!);
+        timerId = window.setTimeout(
+          () => onSettled?.(),
+          SPIN_DURATION_MS + 80,
+        );
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
+      if (timerId) clearTimeout(timerId);
+    };
+  }, [spinning, winningGiftName, segments, slice, onSettled, spinSeed, count]);
 
   if (segments.length === 0) {
     return (
@@ -365,8 +384,14 @@ export function SpinWheel({
               height: ringSize,
               mx: "auto",
               transform: spinTransform,
+              WebkitTransform: spinTransform,
               transition: spinTransition,
+              WebkitTransition: spinTransition,
+              transitionProperty: "transform",
               transformOrigin: "center center",
+              willChange: spinning ? "transform" : "auto",
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
             }}
           >
             <Box

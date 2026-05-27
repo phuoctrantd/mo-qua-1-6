@@ -222,7 +222,8 @@ export default function Home() {
 
       setWinningGiftName(giftName);
       setSpinSeed(spinData.result.spinId);
-      setWheelSpinning(true);
+      // Defer spin flag so iOS Safari paints the wheel at 0° before animating.
+      requestAnimationFrame(() => setWheelSpinning(true));
     } catch (e) {
       setError(e instanceof Error ? e.message : "Quay thất bại.");
       setWheelSpinning(false);
