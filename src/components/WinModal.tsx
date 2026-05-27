@@ -41,7 +41,7 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
     >
       <DialogContent sx={{ textAlign: "center", py: 4, px: 3 }}>
         <Box ref={captureRef}>
-          <Typography variant="h5" fontWeight={800} sx={{ mb: 1 }}>
+          <Typography variant="h5" sx={{ mb: 1, fontWeight: 800 }}>
             {isReplay ? "🎁 Quà của bé" : "🎉 Chúc mừng"} {result.childName}!
           </Typography>
 
@@ -73,9 +73,12 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
 
           <Typography
             variant="h4"
-            fontWeight={800}
-            color="primary.main"
-            sx={{ mb: 1, fontSize: { xs: "1.6rem", sm: "2rem", md: "2.25rem" } }}
+            sx={{
+              mb: 1,
+              fontWeight: 800,
+              color: "primary.main",
+              fontSize: { xs: "1.6rem", sm: "2rem", md: "2.25rem" },
+            }}
           >
             {result.giftName}
           </Typography>
