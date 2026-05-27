@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mở quà 1/6
 
-## Getting Started
+Next.js (Vercel) + Supabase (Postgres + Storage).
 
-First, run the development server:
+## Supabase setup
+
+1. Run `supabase/schema.sql` in **SQL Editor** (new project).
+2. If you already created tables earlier, run `supabase/migrations/002_add_gender.sql`.
+3. Create Storage bucket **`screenshots`** (private is OK).
+
+## Environment
+
+`.env.local`:
+
+```env
+SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_secret_key
+```
+
+Same variables on Vercel.
+
+## Import children from Excel (company template)
+
+Add **column E: Giới tính** (`Nam` / `Nữ`) for each child row.
+
+| A | B | C | D | E |
+|---|---|---|---|---|
+| STT | Họ tên bố/mẹ | Họ tên con | Ngày sinh | Giới tính |
+
+- Department rows (`Ban …`, `Phòng …`) are skipped automatically.
+- Date in column D: Excel date or `dd/mm/yyyy` → stored as `ddmmyyyy`.
+
+Preview (no DB write):
+
+```bash
+npm run import:children -- "C:\path\file.xlsx" --dry-run
+```
+
+Import:
+
+```bash
+npm run import:children -- "C:\path\file.xlsx"
+```
+
+Re-import updates rows with the same `dob` (upsert).
+
+## Import gifts
+
+Create a simple sheet with headers: **Tên quà**, **Số lượng**, **Giới tính** (`Nam` / `Nữ` / `Chung`), **Ảnh** (optional URL).
+
+Run migration `supabase/migrations/004_gift_image_url.sql` first.
+
+If **Ảnh** is empty, the wheel and result card show text/emoji only.
+
+```bash
+npm run import:gifts -- "C:\path\gifts.xlsx" --dry-run
+npm run import:gifts -- "C:\path\gifts.xlsx"
+```
+
+Spin logic: only gifts where `gender` matches the child (`male`/`female`) or `unisex` (`Chung`), and `quantity_remaining > 0`.
+
+## View screenshots
+
+After upload, table `spins` stores:
+
+- `screenshot_path` — e.g. `spins/c5704d17-....png`
+- `screenshot_url` — signed link (open in browser, valid ~1 year)
+
+**In Supabase Dashboard**
+
+1. **Table Editor** → `spins` → column `screenshot_url` → copy/open link.
+2. **Storage** → bucket `screenshots` → folder `spins` → click file to preview.
+
+Run migration `supabase/migrations/003_screenshot_url.sql`, then backfill old rows:
+
+```bash
+npm run backfill:screenshot-urls
+```
+
+**Public URL (optional)**  
+If bucket `screenshots` is **Public**, you can open:
+
+`https://<project-id>.supabase.co/storage/v1/object/public/screenshots/spins/<spin-id>.png`
+
+## Run locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open `http://localhost:3000`.
