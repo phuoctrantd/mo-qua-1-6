@@ -50,7 +50,16 @@ export async function GET(req: Request) {
     return NextResponse.json({ ok: true, alreadySpun: false });
   }
 
-  const gift = spin.gift as { name: string; image_url: string | null } | null;
+  // Supabase nested selects can come back as object or array depending on relation shape.
+  const giftRaw = (spin as unknown as { gift?: unknown }).gift ?? null;
+  const giftRow = Array.isArray(giftRaw) ? giftRaw[0] : giftRaw;
+  const gift =
+    giftRow && typeof giftRow === "object"
+      ? (giftRow as { name?: unknown; image_url?: unknown })
+      : null;
+  const giftName = typeof gift?.name === "string" ? gift.name : "";
+  const giftImageUrl =
+    typeof gift?.image_url === "string" ? gift.image_url.trim() || null : null;
 
   return NextResponse.json({
     ok: true,
@@ -58,8 +67,8 @@ export async function GET(req: Request) {
     result: {
       spinId: spin.id as string,
       childName: child.name as string,
-      giftName: gift?.name ?? "",
-      giftImageUrl: gift?.image_url?.trim() || null,
+      giftName,
+      giftImageUrl,
     },
   });
 }
