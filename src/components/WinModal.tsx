@@ -3,15 +3,12 @@
 import type { RefObject } from "react";
 import { Box } from "@mui/material";
 import {
-  DESIGN_H,
-  DESIGN_W,
+  designFrameSx,
   Hotspot,
   OverlayBox,
 } from "@/components/DesignFrame";
 import { formatLuckyNumber } from "@/lib/format-lucky-number";
 import type { SpinResult } from "@/lib/types";
-
-const DESIGN_RATIO = DESIGN_W / DESIGN_H;
 
 type WinModalProps = {
   open: boolean;
@@ -26,30 +23,20 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
   const displayNumber = formatLuckyNumber(result.luckyNumber);
 
   const frame = (
-    <Box
-      ref={captureRef}
-      sx={{
-        width: `min(100vw, calc(100dvh * ${DESIGN_RATIO}), ${DESIGN_W}px)`,
-        aspectRatio: `${DESIGN_W} / ${DESIGN_H}`,
-        position: "relative",
-        flexShrink: 0,
-        containerType: "inline-size",
-        maxHeight: "100dvh",
-        bgcolor: "#87CEEB",
-        overflow: "hidden",
-      }}
-    >
+    <Box ref={captureRef} sx={designFrameSx}>
       <Box
         component="img"
         src="/bg_bag.png"
         alt=""
+        crossOrigin="anonymous"
         draggable={false}
         sx={{
           position: "absolute",
           inset: 0,
           width: "100%",
           height: "100%",
-          objectFit: "contain",
+          objectFit: "cover",
+          objectPosition: "center top",
           pointerEvents: "none",
           userSelect: "none",
         }}
@@ -90,6 +77,7 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
             component="img"
             src="/bg_result.png"
             alt=""
+            crossOrigin="anonymous"
             draggable={false}
             sx={{
               width: "100%",
@@ -97,7 +85,6 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
               display: "block",
               pointerEvents: "none",
               userSelect: "none",
-              mixBlendMode: "multiply",
             }}
           />
 

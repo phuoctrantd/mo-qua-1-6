@@ -11,8 +11,8 @@ import {
   DialogTitle,
   Typography,
 } from "@mui/material";
-import * as htmlToImage from "html-to-image";
 import { Confetti } from "@/components/Confetti";
+import { captureScreenPng } from "@/lib/capture-screen";
 import { DesignFrame, Hotspot, OverlayBox } from "@/components/DesignFrame";
 import { WinModal } from "@/components/WinModal";
 import type { SpinResult } from "@/lib/types";
@@ -51,17 +51,12 @@ export default function Home() {
   async function uploadScreenshotSilently(result: SpinResult) {
     try {
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-      await new Promise((r) => setTimeout(r, 400));
+      await new Promise((r) => setTimeout(r, 600));
 
       const node = resultCaptureRef.current ?? captureAllRef.current;
       if (!node) return;
 
-      const dataUrl = await htmlToImage.toPng(node, {
-        pixelRatio: Math.min(2, window.devicePixelRatio || 2),
-        backgroundColor: "#87CEEB",
-        cacheBust: true,
-        skipFonts: true,
-      });
+      const dataUrl = await captureScreenPng(node, "#87CEEB");
 
       await fetch(`/api/spin/${result.spinId}/screenshot`, {
         method: "POST",

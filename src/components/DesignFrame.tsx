@@ -5,58 +5,46 @@ import { Box } from "@mui/material";
 /** Design canvas: 941×1672 (mobile portrait). */
 export const DESIGN_W = 941;
 export const DESIGN_H = 1672;
-const DESIGN_RATIO = DESIGN_W / DESIGN_H;
+/** Shared frame box — full viewport on phone, max 941px wide on desktop. */
+export const designFrameSx = {
+  width: "100vw",
+  height: "100dvh",
+  maxWidth: `${DESIGN_W}px`,
+  mx: "auto",
+  position: "relative",
+  overflow: "hidden",
+  containerType: "inline-size",
+  flexShrink: 0,
+  bgcolor: "#87CEEB",
+} as const;
 
 type DesignFrameProps = {
   src: string;
   children?: React.ReactNode;
 };
 
-/**
- * Mobile portrait frame — same aspect ratio on PC and phone.
- * Scales down to fit viewport (width and height), never stretches.
- */
+/** Full-screen portrait frame; background image uses cover (no side gaps on mobile). */
 export function DesignFrame({ src, children }: DesignFrameProps) {
   return (
-    <Box
-      sx={{
-        width: "100%",
-        minHeight: "100dvh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        bgcolor: "#87CEEB",
-        p: 0,
-      }}
-    >
+    <Box sx={designFrameSx}>
       <Box
+        component="img"
+        src={src}
+        alt=""
         sx={{
-          width: `min(100vw, calc(100dvh * ${DESIGN_RATIO}), ${DESIGN_W}px)`,
-          aspectRatio: `${DESIGN_W} / ${DESIGN_H}`,
-          position: "relative",
-          flexShrink: 0,
-          containerType: "inline-size",
-          maxHeight: "100dvh",
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          objectPosition: "center top",
+          display: "block",
+          userSelect: "none",
+          pointerEvents: "none",
         }}
-      >
-        <Box
-          component="img"
-          src={src}
-          alt=""
-          sx={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            display: "block",
-            userSelect: "none",
-            pointerEvents: "none",
-          }}
-          draggable={false}
-        />
-        {children}
-      </Box>
+        draggable={false}
+      />
+      {children}
     </Box>
   );
 }
