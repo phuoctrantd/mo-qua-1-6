@@ -79,7 +79,7 @@ export default function Home() {
 
   async function handleDobSubmit() {
     if (!dobOk) {
-      setError("Ngày sinh phải đúng 8 số dạng ddmmyyyy.");
+      setError("Ngày sinh phải đúng 8 số ví dụ 01062026.");
       return;
     }
 
@@ -119,7 +119,7 @@ export default function Home() {
 
   const openBag = useCallback(async () => {
     if (!dobOk) {
-      setError("Ngày sinh phải đúng 8 số dạng ddmmyyyy.");
+      setError("Ngày sinh phải đúng 8 số ví dụ 01062026.");
       setStep("dob");
       return;
     }
@@ -197,7 +197,7 @@ export default function Home() {
 
       {step === "dob" ? (
         <DesignFrame src="/bg_dob.png">
-          <OverlayBox top="51.2%" left="24%" width="52%" height="4.8%">
+          <OverlayBox top="53.2%" left="24%" width="52%" height="4.8%">
             <Box
               component="input"
               value={dob}

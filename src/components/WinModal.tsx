@@ -3,6 +3,7 @@
 import type { RefObject } from "react";
 import { Box } from "@mui/material";
 import {
+  designFrameShellSx,
   designFrameSx,
   Hotspot,
   OverlayBox,
@@ -23,7 +24,8 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
   const displayNumber = formatLuckyNumber(result.luckyNumber);
 
   const frame = (
-    <Box ref={captureRef} sx={designFrameSx}>
+    <Box ref={captureRef} sx={designFrameShellSx}>
+      <Box sx={designFrameSx}>
       <Box
         component="img"
         src="/bg_bag.png"
@@ -122,6 +124,7 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
             />
           </Box>
         </Box>
+      </Box>
       </Box>
     </Box>
   );
