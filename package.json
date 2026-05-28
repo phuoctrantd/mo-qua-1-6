@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "import:children": "node scripts/import-children.mjs",
-    "import:gifts": "node scripts/import-gifts.mjs",
-    "backfill:screenshot-urls": "node scripts/backfill-screenshot-urls.mjs"
+    "import:gifts": "node scripts/import-gifts.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -18,7 +17,6 @@
     "@mui/material": "^9.0.1",
     "@mui/material-nextjs": "^9.0.1",
     "@supabase/supabase-js": "^2.106.2",
-    "html-to-image": "^1.11.13",
     "next": "16.2.6",
     "react": "19.2.4",
     "react-dom": "19.2.4"

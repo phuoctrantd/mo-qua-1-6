@@ -35,7 +35,6 @@ export const designFrameShellSx = {
 export function FrameLoading() {
   return (
     <Box
-      data-capture-ignore="true"
       sx={{
         position: "absolute",
         inset: 0,

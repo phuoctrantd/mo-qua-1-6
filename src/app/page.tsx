@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import { Confetti } from "@/components/Confetti";
-import { captureScreenPng } from "@/lib/capture-screen";
 import {
   BAG_CTA_BUTTON,
   BAG_MYSTERY_HOTSPOT,
@@ -20,7 +19,6 @@ import {
   DOB_INPUT,
 } from "@/lib/design-layout";
 import { preloadBagScreen, preloadResultAssets } from "@/lib/preload-images";
-import { waitForCaptureReady } from "@/lib/wait-for-capture";
 import { DesignFrame, Hotspot, OverlayBox } from "@/components/DesignFrame";
 import { WinModal } from "@/components/WinModal";
 import type { SpinResult } from "@/lib/types";
@@ -34,9 +32,6 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const captureAllRef = useRef<HTMLDivElement | null>(null);
-  const resultCaptureRef = useRef<HTMLDivElement | null>(null);
 
   const dobOk = useMemo(() => /^\d{8}$/.test(dob), [dob]);
 
@@ -54,28 +49,6 @@ export default function Home() {
   function onDobChange(value: string) {
     setDob(value.replace(/[^\d]/g, "").slice(0, 8));
     if (error) setError(null);
-  }
-
-  async function uploadScreenshotSilently(result: SpinResult) {
-    try {
-      const node = resultCaptureRef.current;
-      if (!node) return;
-
-      const ready = await waitForCaptureReady(node);
-      if (!ready) return;
-
-      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-
-      const dataUrl = await captureScreenPng(node, "#87CEEB");
-
-      await fetch(`/api/spin/${result.spinId}/screenshot`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ pngDataUrl: dataUrl }),
-      });
-    } catch {
-      // Silent
-    }
   }
 
   async function showResultModal(result: SpinResult, withConfetti: boolean) {
@@ -162,7 +135,6 @@ export default function Home() {
       };
 
       await showResultModal(result, true);
-      void uploadScreenshotSilently(result);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Bóc túi thất bại.");
     } finally {
@@ -171,7 +143,7 @@ export default function Home() {
   }, [dob, dobOk]);
 
   return (
-    <Box ref={captureAllRef} sx={{ position: "relative" }}>
+    <Box sx={{ position: "relative" }}>
       <Confetti active={showConfetti} />
 
       <Dialog
@@ -323,12 +295,7 @@ export default function Home() {
         </DesignFrame>
       )}
 
-      <WinModal
-        open={modalOpen}
-        result={spinResult}
-        captureRef={resultCaptureRef}
-        onConfirm={resetAll}
-      />
+      <WinModal open={modalOpen} result={spinResult} onConfirm={resetAll} />
     </Box>
   );
 }

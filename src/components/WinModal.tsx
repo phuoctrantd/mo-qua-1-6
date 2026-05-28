@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import {
   designFrameShellSx,
@@ -17,11 +17,10 @@ import type { SpinResult } from "@/lib/types";
 type WinModalProps = {
   open: boolean;
   result: SpinResult | null;
-  captureRef?: RefObject<HTMLDivElement | null>;
   onConfirm: () => void;
 };
 
-export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps) {
+export function WinModal({ open, result, onConfirm }: WinModalProps) {
   const [assetsReady, setAssetsReady] = useState(false);
 
   useEffect(() => {
@@ -41,7 +40,7 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
   const displayNumber = formatLuckyNumber(result.luckyNumber);
 
   const frame = (
-    <Box ref={captureRef} sx={designFrameShellSx}>
+    <Box sx={designFrameShellSx}>
       <Box sx={designFrameSx}>
         {!assetsReady && <FrameLoading />}
         <Box
