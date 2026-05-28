@@ -14,9 +14,9 @@ const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL ??
   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
-const siteTitle = "Golden City — Vòng quay Quốc tế Thiếu nhi 1/6 ";
+const siteTitle = "Golden City — Bóc túi mù Quốc tế Thiếu nhi 1/6";
 const siteDescription =
-  "Golden City — Vòng quay Quốc tế Thiếu nhi 1/6";
+  "Golden City — Bóc túi mù Quốc tế Thiếu nhi 1/6";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     images: [
       {
         url: "/logo.png",
-        alt: "Golden City — Vòng quay Quốc tế Thiếu nhi 1/6",
+        alt: "Golden City — Bóc túi mù Quốc tế Thiếu nhi 1/6",
       },
     ],
   },

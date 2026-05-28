@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { formatLuckyNumber } from "@/lib/format-lucky-number";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export async function GET(req: Request) {
@@ -35,7 +36,7 @@ export async function GET(req: Request) {
 
   const { data: spin, error: spinError } = await sb
     .from("spins")
-    .select("id, gift:gifts(name, image_url)")
+    .select("id, gift:gifts(name)")
     .eq("child_id", child.id)
     .maybeSingle();
 
@@ -55,11 +56,10 @@ export async function GET(req: Request) {
   const giftRow = Array.isArray(giftRaw) ? giftRaw[0] : giftRaw;
   const gift =
     giftRow && typeof giftRow === "object"
-      ? (giftRow as { name?: unknown; image_url?: unknown })
+      ? (giftRow as { name?: unknown })
       : null;
-  const giftName = typeof gift?.name === "string" ? gift.name : "";
-  const giftImageUrl =
-    typeof gift?.image_url === "string" ? gift.image_url.trim() || null : null;
+  const luckyNumber =
+    typeof gift?.name === "string" ? formatLuckyNumber(gift.name) : "";
 
   return NextResponse.json({
     ok: true,
@@ -67,8 +67,7 @@ export async function GET(req: Request) {
     result: {
       spinId: spin.id as string,
       childName: child.name as string,
-      giftName,
-      giftImageUrl,
+      luckyNumber,
     },
   });
 }

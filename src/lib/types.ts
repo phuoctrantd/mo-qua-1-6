@@ -6,8 +6,7 @@ export type GiftSegment = {
 export type SpinResult = {
   spinId: string;
   childName: string;
-  giftName: string;
-  giftImageUrl: string | null;
+  luckyNumber: string;
   /** True when re-opening a previous spin (no new wheel animation). */
   alreadySpun?: boolean;
 };

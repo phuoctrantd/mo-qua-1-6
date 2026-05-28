@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { formatLuckyNumber } from "@/lib/format-lucky-number";
 import { normalizeSpinRpc } from "@/lib/spin-result";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           ok: false,
-          error: "Hết quà phù hợp giới tính (hoặc không còn số lượng).",
+          error: "Hết số may mắn phù hợp giới tính/độ tuổi (hoặc không còn số lượng).",
         },
         { status: 409 },
       );
@@ -67,7 +68,7 @@ export async function POST(req: Request) {
     result: {
       spinId: row.spin_id,
       childName: row.child_name,
-      giftName: row.gift_name,
+      luckyNumber: formatLuckyNumber(row.gift_name),
     },
   });
 }

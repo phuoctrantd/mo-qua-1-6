@@ -1,35 +1,30 @@
--- Run this in Supabase SQL editor (fresh project).
+-- Add age filters for lucky numbers (stored in public.gifts.name)
+-- Run in Supabase SQL Editor.
 
-create table if not exists public.children (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  dob text not null unique check (dob ~ '^\d{8}$'),
-  gender text not null check (gender in ('male', 'female')),
-  parent_name text null,
-  created_at timestamptz not null default now()
-);
+alter table public.gifts
+  add column if not exists min_age integer;
 
-create table if not exists public.gifts (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  quantity_remaining integer not null check (quantity_remaining >= 0),
-  gender text not null check (gender in ('male', 'female', 'unisex')),
-  min_age integer null check (min_age is null or min_age >= 0),
-  max_age integer null check (max_age is null or max_age >= 0),
-  image_url text null,
-  created_at timestamptz not null default now()
-);
+alter table public.gifts
+  add column if not exists max_age integer;
 
-create table if not exists public.spins (
-  id uuid primary key default gen_random_uuid(),
-  child_id uuid not null references public.children(id) on delete restrict,
-  gift_id uuid not null references public.gifts(id) on delete restrict,
-  created_at timestamptz not null default now(),
-  screenshot_path text null,
-  screenshot_url text null,
-  constraint spins_one_per_child unique (child_id)
-);
+alter table public.gifts
+  drop constraint if exists gifts_min_age_check;
+alter table public.gifts
+  add constraint gifts_min_age_check check (min_age is null or min_age >= 0);
 
+alter table public.gifts
+  drop constraint if exists gifts_max_age_check;
+alter table public.gifts
+  add constraint gifts_max_age_check check (max_age is null or max_age >= 0);
+
+alter table public.gifts
+  drop constraint if exists gifts_age_range_check;
+alter table public.gifts
+  add constraint gifts_age_range_check check (
+    min_age is null or max_age is null or min_age <= max_age
+  );
+
+-- Lucky number selection logic: still uses public.gifts, but filters by gender + age + quantity.
 create or replace function public.spin_for_dob(p_dob text)
 returns table (spin_id uuid, child_name text, gift_name text)
 language plpgsql
@@ -48,6 +43,10 @@ begin
 
   if not found then
     raise exception 'child_not_found';
+  end if;
+
+  if v_child.gender is null then
+    raise exception 'child_missing_gender';
   end if;
 
   if exists (select 1 from public.spins s where s.child_id = v_child.id) then
@@ -83,3 +82,4 @@ begin
   select v_spin_id, v_child.name, v_gift.name;
 end;
 $$;
+
