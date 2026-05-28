@@ -18,6 +18,12 @@ const siteTitle = "Golden City — Bóc túi mù Quốc tế Thiếu nhi 1/6";
 const siteDescription =
   "Golden City — Bóc túi mù Quốc tế Thiếu nhi 1/6";
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: siteTitle,

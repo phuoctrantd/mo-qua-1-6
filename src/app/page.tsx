@@ -1,17 +1,9 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Typography,
-} from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { Confetti } from "@/components/Confetti";
+import { ErrorAlertModal } from "@/components/ErrorAlertModal";
 import {
   BAG_CTA_BUTTON,
   BAG_MYSTERY_HOTSPOT,
@@ -146,39 +138,11 @@ export default function Home() {
     <Box sx={{ position: "relative" }}>
       <Confetti active={showConfetti} />
 
-      <Dialog
+      <ErrorAlertModal
         open={Boolean(error)}
+        message={error}
         onClose={() => setError(null)}
-        maxWidth="xs"
-        fullWidth
-        slotProps={{
-          paper: {
-            sx: {
-              borderRadius: 4,
-              border: "4px solid #FFD93D",
-              overflow: "hidden",
-            },
-          },
-        }}
-      >
-        <DialogTitle sx={{ fontWeight: 900, textAlign: "center" }}>
-          Có lỗi rồi!
-        </DialogTitle>
-        <DialogContent sx={{ textAlign: "center", pt: 1 }}>
-          <Typography color="text.secondary">{error}</Typography>
-        </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", pb: 3, px: 3 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            size="large"
-            onClick={() => setError(null)}
-            sx={{ borderRadius: 999, px: 5 }}
-          >
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
+      />
 
       {step === "dob" ? (
         <DesignFrame src="/bg_dob.png">
