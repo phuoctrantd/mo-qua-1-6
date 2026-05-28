@@ -18,6 +18,9 @@ const siteTitle = "Golden City — Bóc túi mù Quốc tế Thiếu nhi 1/6";
 const siteDescription =
   "Golden City — Bóc túi mù Quốc tế Thiếu nhi 1/6";
 
+/** Avoid serving a stale static shell from the CDN after deploy. */
+export const dynamic = "force-dynamic";
+
 export const viewport = {
   width: "device-width",
   initialScale: 1,
