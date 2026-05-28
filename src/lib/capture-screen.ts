@@ -34,6 +34,7 @@ async function inlineImageSources(root: HTMLElement) {
           reader.readAsDataURL(blob);
         });
         img.src = dataUrl;
+        img.style.opacity = "1";
         if (img.decode) await img.decode();
       } catch {
         // Keep original src if inlining fails.
@@ -42,21 +43,40 @@ async function inlineImageSources(root: HTMLElement) {
   );
 }
 
+function prepareCloneForCapture(clone: HTMLElement, sourceRect: DOMRect) {
+  clone.style.position = "fixed";
+  clone.style.left = "-20000px";
+  clone.style.top = "0";
+  clone.style.width = `${sourceRect.width}px`;
+  clone.style.height = `${sourceRect.height}px`;
+  clone.style.zIndex = "-1";
+  clone.style.pointerEvents = "none";
+  clone.style.opacity = "1";
+
+  clone.querySelectorAll("[data-capture-ignore='true']").forEach((el) => {
+    el.remove();
+  });
+
+  clone.querySelectorAll("img").forEach((el) => {
+    const img = el as HTMLImageElement;
+    img.style.mixBlendMode = "normal";
+    img.style.opacity = "1";
+  });
+
+  clone.querySelectorAll("*").forEach((el) => {
+    if (!(el instanceof HTMLElement)) return;
+    if (el.style.opacity === "0") el.style.opacity = "1";
+  });
+}
+
 /** Clone node off-screen, inline images, then export PNG (works with html-to-image). */
 export async function captureScreenPng(
   node: HTMLElement,
   backgroundColor = "#87CEEB",
 ): Promise<string> {
+  const rect = node.getBoundingClientRect();
   const clone = node.cloneNode(true) as HTMLElement;
-  clone.style.position = "fixed";
-  clone.style.left = "-10000px";
-  clone.style.top = "0";
-  clone.style.zIndex = "-1";
-  clone.style.pointerEvents = "none";
-
-  clone.querySelectorAll("img").forEach((el) => {
-    (el as HTMLImageElement).style.mixBlendMode = "normal";
-  });
+  prepareCloneForCapture(clone, rect);
 
   document.body.appendChild(clone);
   try {
@@ -69,6 +89,8 @@ export async function captureScreenPng(
       backgroundColor,
       cacheBust: true,
       skipFonts: true,
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
     });
   } finally {
     document.body.removeChild(clone);

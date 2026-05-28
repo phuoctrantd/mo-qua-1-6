@@ -13,7 +13,14 @@ import {
 } from "@mui/material";
 import { Confetti } from "@/components/Confetti";
 import { captureScreenPng } from "@/lib/capture-screen";
+import {
+  BAG_CTA_BUTTON,
+  BAG_MYSTERY_HOTSPOT,
+  DOB_CONFIRM_HOTSPOT,
+  DOB_INPUT,
+} from "@/lib/design-layout";
 import { preloadBagScreen, preloadResultAssets } from "@/lib/preload-images";
+import { waitForCaptureReady } from "@/lib/wait-for-capture";
 import { DesignFrame, Hotspot, OverlayBox } from "@/components/DesignFrame";
 import { WinModal } from "@/components/WinModal";
 import type { SpinResult } from "@/lib/types";
@@ -51,11 +58,13 @@ export default function Home() {
 
   async function uploadScreenshotSilently(result: SpinResult) {
     try {
-      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
-      await new Promise((r) => setTimeout(r, 600));
-
-      const node = resultCaptureRef.current ?? captureAllRef.current;
+      const node = resultCaptureRef.current;
       if (!node) return;
+
+      const ready = await waitForCaptureReady(node);
+      if (!ready) return;
+
+      await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
       const dataUrl = await captureScreenPng(node, "#87CEEB");
 
@@ -201,7 +210,12 @@ export default function Home() {
 
       {step === "dob" ? (
         <DesignFrame src="/bg_dob.png">
-          <OverlayBox top="53.2%" left="24%" width="52%" height="4.8%">
+          <OverlayBox
+            top={DOB_INPUT.top}
+            left={DOB_INPUT.left}
+            width={DOB_INPUT.width}
+            height={DOB_INPUT.height}
+          >
             <Box
               component="input"
               value={dob}
@@ -239,10 +253,10 @@ export default function Home() {
           </OverlayBox>
 
           <Hotspot
-            top="58.2%"
-            left="18%"
-            width="64%"
-            height="7.8%"
+            top={DOB_CONFIRM_HOTSPOT.top}
+            left={DOB_CONFIRM_HOTSPOT.left}
+            width={DOB_CONFIRM_HOTSPOT.width}
+            height={DOB_CONFIRM_HOTSPOT.height}
             ariaLabel="Xác nhận ngày sinh"
             disabled={submittingDob}
             onClick={() => void handleDobSubmit()}
@@ -254,7 +268,12 @@ export default function Home() {
         </DesignFrame>
       ) : (
         <DesignFrame src="/bg_bag.png" extraSrcs={["/image_button.png"]}>
-          <OverlayBox top="37.2%" left="10%" width="80%" height="5.4%">
+          <OverlayBox
+            top={BAG_CTA_BUTTON.top}
+            left={BAG_CTA_BUTTON.left}
+            width={BAG_CTA_BUTTON.width}
+            height={BAG_CTA_BUTTON.height}
+          >
             {openingBag ? (
               <CircularProgress sx={{ color: "#ff4d8d" }} />
             ) : (
@@ -283,7 +302,7 @@ export default function Home() {
                   sx={{
                     width: "100%",
                     height: "100%",
-                    objectFit: "contain",
+                    objectFit: "fill",
                     display: "block",
                     pointerEvents: "none",
                   }}
@@ -293,10 +312,10 @@ export default function Home() {
           </OverlayBox>
 
           <Hotspot
-            top="46%"
-            left="28%"
-            width="44%"
-            height="28%"
+            top={BAG_MYSTERY_HOTSPOT.top}
+            left={BAG_MYSTERY_HOTSPOT.left}
+            width={BAG_MYSTERY_HOTSPOT.width}
+            height={BAG_MYSTERY_HOTSPOT.height}
             ariaLabel="Bóc túi mù"
             disabled={openingBag}
             onClick={() => void openBag()}

@@ -2,29 +2,24 @@
 
 import { useEffect, useState } from "react";
 import { Box, CircularProgress } from "@mui/material";
+import { DESIGN_H, DESIGN_W } from "@/lib/design-layout";
 import { preloadImages } from "@/lib/preload-images";
 
-/** Design canvas: 941×1672 (mobile portrait). */
-export const DESIGN_W = 941;
-export const DESIGN_H = 1672;
 const DESIGN_RATIO = DESIGN_W / DESIGN_H;
 
-/** Mobile: full screen. Desktop: full viewport height, width from aspect ratio (max 941px). */
+export { DESIGN_H, DESIGN_W };
+
+/** Fit 941×1672 inside the viewport so overlay % matches the artwork on every device. */
 export const designFrameSx = {
-  width: "100vw",
-  height: "100dvh",
-  maxWidth: "100vw",
-  mx: "auto",
   position: "relative",
   overflow: "hidden",
   containerType: "inline-size",
   flexShrink: 0,
   bgcolor: "#87CEEB",
-  "@media (min-width: 768px)": {
-    width: `min(${DESIGN_W}px, calc(100dvh * ${DESIGN_RATIO}), 100vw)`,
-    maxWidth: `${DESIGN_W}px`,
-    height: "100dvh",
-  },
+  aspectRatio: `${DESIGN_W} / ${DESIGN_H}`,
+  width: `min(100vw, calc(100dvh * ${DESIGN_RATIO}), ${DESIGN_W}px)`,
+  height: `min(100dvh, calc(100vw / ${DESIGN_RATIO}))`,
+  maxWidth: `${DESIGN_W}px`,
 } as const;
 
 export const designFrameShellSx = {
@@ -32,7 +27,7 @@ export const designFrameShellSx = {
   minHeight: "100dvh",
   height: "100dvh",
   display: "flex",
-  alignItems: "stretch",
+  alignItems: "center",
   justifyContent: "center",
   bgcolor: "#87CEEB",
 } as const;
@@ -40,6 +35,7 @@ export const designFrameShellSx = {
 export function FrameLoading() {
   return (
     <Box
+      data-capture-ignore="true"
       sx={{
         position: "absolute",
         inset: 0,

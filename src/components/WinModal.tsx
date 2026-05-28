@@ -9,6 +9,7 @@ import {
   Hotspot,
   OverlayBox,
 } from "@/components/DesignFrame";
+import { RESULT_CLOSE_HOTSPOT, RESULT_LUCKY_NUMBER } from "@/lib/design-layout";
 import { formatLuckyNumber } from "@/lib/format-lucky-number";
 import { preloadResultAssets } from "@/lib/preload-images";
 import type { SpinResult } from "@/lib/types";
@@ -47,7 +48,6 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
           component="img"
           src="/bg_bag.png"
           alt=""
-          crossOrigin="anonymous"
           draggable={false}
           sx={{
             position: "absolute",
@@ -99,7 +99,6 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
               component="img"
               src="/bg_result.png"
               alt=""
-              crossOrigin="anonymous"
               draggable={false}
               sx={{
                 width: "100%",
@@ -111,7 +110,12 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
             />
 
             <Box sx={{ position: "absolute", inset: 0 }}>
-              <OverlayBox top="34.5%" left="22%" width="56%" height="13.5%">
+              <OverlayBox
+                top={RESULT_LUCKY_NUMBER.top}
+                left={RESULT_LUCKY_NUMBER.left}
+                width={RESULT_LUCKY_NUMBER.width}
+                height={RESULT_LUCKY_NUMBER.height}
+              >
                 <Box
                   component="span"
                   sx={{
@@ -135,10 +139,10 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
               </OverlayBox>
 
               <Hotspot
-                top="75.2%"
-                left="9%"
-                width="82%"
-                height="7.2%"
+                top={RESULT_CLOSE_HOTSPOT.top}
+                left={RESULT_CLOSE_HOTSPOT.left}
+                width={RESULT_CLOSE_HOTSPOT.width}
+                height={RESULT_CLOSE_HOTSPOT.height}
                 ariaLabel="Đóng"
                 onClick={onConfirm}
               />
