@@ -1,14 +1,16 @@
 "use client";
 
-import type { RefObject } from "react";
+import { useEffect, useState, type RefObject } from "react";
 import { Box } from "@mui/material";
 import {
   designFrameShellSx,
   designFrameSx,
+  FrameLoading,
   Hotspot,
   OverlayBox,
 } from "@/components/DesignFrame";
 import { formatLuckyNumber } from "@/lib/format-lucky-number";
+import { preloadResultAssets } from "@/lib/preload-images";
 import type { SpinResult } from "@/lib/types";
 
 type WinModalProps = {
@@ -19,6 +21,20 @@ type WinModalProps = {
 };
 
 export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps) {
+  const [assetsReady, setAssetsReady] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    void preloadResultAssets().then(() => {
+      if (!cancelled) setAssetsReady(true);
+    });
+    return () => {
+      cancelled = true;
+      setAssetsReady(false);
+    };
+  }, [open]);
+
   if (!open || !result) return null;
 
   const displayNumber = formatLuckyNumber(result.luckyNumber);
@@ -26,105 +42,111 @@ export function WinModal({ open, result, captureRef, onConfirm }: WinModalProps)
   const frame = (
     <Box ref={captureRef} sx={designFrameShellSx}>
       <Box sx={designFrameSx}>
-      <Box
-        component="img"
-        src="/bg_bag.png"
-        alt=""
-        crossOrigin="anonymous"
-        draggable={false}
-        sx={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          objectPosition: "center top",
-          pointerEvents: "none",
-          userSelect: "none",
-        }}
-      />
+        {!assetsReady && <FrameLoading />}
+        <Box
+          component="img"
+          src="/bg_bag.png"
+          alt=""
+          crossOrigin="anonymous"
+          draggable={false}
+          sx={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center top",
+            pointerEvents: "none",
+            userSelect: "none",
+            opacity: assetsReady ? 1 : 0,
+          }}
+        />
 
-      <Box
-        aria-hidden
-        sx={{
-          position: "absolute",
-          inset: 0,
-          bgcolor: "rgba(0,0,0,0.2)",
-          pointerEvents: "none",
-        }}
-      />
+        {assetsReady && (
+          <>
+        <Box
+          aria-hidden
+          sx={{
+            position: "absolute",
+            inset: 0,
+            bgcolor: "rgba(0,0,0,0.2)",
+            pointerEvents: "none",
+          }}
+        />
 
-      <Box
-        sx={{
-          position: "absolute",
-          inset: 0,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          px: "7%",
-          py: "12%",
-          zIndex: 2,
-        }}
-      >
         <Box
           sx={{
-            position: "relative",
-            width: "100%",
-            maxHeight: "100%",
-            containerType: "inline-size",
-            isolation: "isolate",
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            px: "7%",
+            py: "12%",
+            zIndex: 2,
           }}
         >
           <Box
-            component="img"
-            src="/bg_result.png"
-            alt=""
-            crossOrigin="anonymous"
-            draggable={false}
             sx={{
+              position: "relative",
               width: "100%",
-              height: "auto",
-              display: "block",
-              pointerEvents: "none",
-              userSelect: "none",
+              maxHeight: "100%",
+              containerType: "inline-size",
+              isolation: "isolate",
             }}
-          />
-
-          <Box sx={{ position: "absolute", inset: 0 }}>
-            <OverlayBox top="34.5%" left="22%" width="56%" height="13.5%">
-              <Box
-                component="span"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "100%",
-                  height: "100%",
-                  fontWeight: 700,
-                  fontSize: "11.5cqw",
-                  letterSpacing: "0.9cqw",
-                  lineHeight: 1,
-                  color: "#ff4d8d",
-                  textAlign: "center",
-                  fontVariantNumeric: "tabular-nums",
-                  pt: "0.3cqw",
-                }}
-              >
-                {displayNumber}
-              </Box>
-            </OverlayBox>
-
-            <Hotspot
-              top="75.2%"
-              left="9%"
-              width="82%"
-              height="7.2%"
-              ariaLabel="Đóng"
-              onClick={onConfirm}
+          >
+            <Box
+              component="img"
+              src="/bg_result.png"
+              alt=""
+              crossOrigin="anonymous"
+              draggable={false}
+              sx={{
+                width: "100%",
+                height: "auto",
+                display: "block",
+                pointerEvents: "none",
+                userSelect: "none",
+              }}
             />
+
+            <Box sx={{ position: "absolute", inset: 0 }}>
+              <OverlayBox top="34.5%" left="22%" width="56%" height="13.5%">
+                <Box
+                  component="span"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    width: "100%",
+                    height: "100%",
+                    fontWeight: 700,
+                    fontSize: "11.5cqw",
+                    letterSpacing: "0.9cqw",
+                    lineHeight: 1,
+                    color: "#ff4d8d",
+                    textAlign: "center",
+                    fontVariantNumeric: "tabular-nums",
+                    pt: "0.3cqw",
+                  }}
+                >
+                  {displayNumber}
+                </Box>
+              </OverlayBox>
+
+              <Hotspot
+                top="75.2%"
+                left="9%"
+                width="82%"
+                height="7.2%"
+                ariaLabel="Đóng"
+                onClick={onConfirm}
+              />
+            </Box>
           </Box>
         </Box>
-      </Box>
+          </>
+        )}
       </Box>
     </Box>
   );

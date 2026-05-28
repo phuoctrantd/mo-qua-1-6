@@ -1,14 +1,15 @@
 "use client";
 
-import { Box } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, CircularProgress } from "@mui/material";
+import { preloadImages } from "@/lib/preload-images";
 
 /** Design canvas: 941×1672 (mobile portrait). */
 export const DESIGN_W = 941;
 export const DESIGN_H = 1672;
-/** Phone-like width when viewed on desktop browsers. */
-export const DESKTOP_FRAME_W = 420;
+const DESIGN_RATIO = DESIGN_W / DESIGN_H;
 
-/** Mobile: full screen. Desktop: narrow centered column (~420px). */
+/** Mobile: full screen. Desktop: full viewport height, width from aspect ratio (max 941px). */
 export const designFrameSx = {
   width: "100vw",
   height: "100dvh",
@@ -20,33 +21,67 @@ export const designFrameSx = {
   flexShrink: 0,
   bgcolor: "#87CEEB",
   "@media (min-width: 768px)": {
-    width: `${DESKTOP_FRAME_W}px`,
-    maxWidth: `min(92vw, ${DESKTOP_FRAME_W}px)`,
-    height: "auto",
-    aspectRatio: `${DESIGN_W} / ${DESIGN_H}`,
-    maxHeight: "96dvh",
+    width: `min(${DESIGN_W}px, calc(100dvh * ${DESIGN_RATIO}), 100vw)`,
+    maxWidth: `${DESIGN_W}px`,
+    height: "100dvh",
   },
 } as const;
 
 export const designFrameShellSx = {
   width: "100%",
   minHeight: "100dvh",
+  height: "100dvh",
   display: "flex",
-  alignItems: { xs: "stretch", md: "center" },
+  alignItems: "stretch",
   justifyContent: "center",
   bgcolor: "#87CEEB",
 } as const;
 
+export function FrameLoading() {
+  return (
+    <Box
+      sx={{
+        position: "absolute",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 20,
+        bgcolor: "#87CEEB",
+      }}
+    >
+      <CircularProgress size={48} sx={{ color: "#ff4d8d" }} />
+    </Box>
+  );
+}
+
 type DesignFrameProps = {
   src: string;
+  extraSrcs?: readonly string[];
   children?: React.ReactNode;
 };
 
 /** Full-screen portrait frame; background image uses cover (no side gaps on mobile). */
-export function DesignFrame({ src, children }: DesignFrameProps) {
+export function DesignFrame({ src, extraSrcs = [], children }: DesignFrameProps) {
+  const assetsKey = [src, ...extraSrcs].join("|");
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const urls = assetsKey.split("|");
+    void preloadImages(urls).then(() => {
+      if (!cancelled) setReady(true);
+    });
+    return () => {
+      cancelled = true;
+      setReady(false);
+    };
+  }, [assetsKey]);
+
   return (
     <Box sx={designFrameShellSx}>
       <Box sx={designFrameSx}>
+        {!ready && <FrameLoading />}
         <Box
           component="img"
           src={src}
@@ -61,10 +96,11 @@ export function DesignFrame({ src, children }: DesignFrameProps) {
             display: "block",
             userSelect: "none",
             pointerEvents: "none",
+            opacity: ready ? 1 : 0,
           }}
           draggable={false}
         />
-        {children}
+        {ready ? children : null}
       </Box>
     </Box>
   );

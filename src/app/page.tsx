@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { Confetti } from "@/components/Confetti";
 import { captureScreenPng } from "@/lib/capture-screen";
+import { preloadBagScreen, preloadResultAssets } from "@/lib/preload-images";
 import { DesignFrame, Hotspot, OverlayBox } from "@/components/DesignFrame";
 import { WinModal } from "@/components/WinModal";
 import type { SpinResult } from "@/lib/types";
@@ -68,7 +69,8 @@ export default function Home() {
     }
   }
 
-  function showResultModal(result: SpinResult, withConfetti: boolean) {
+  async function showResultModal(result: SpinResult, withConfetti: boolean) {
+    await preloadResultAssets();
     setSpinResult(result);
     setModalOpen(true);
     if (withConfetti) {
@@ -105,11 +107,13 @@ export default function Home() {
 
       if (priorData.alreadySpun) {
         setStep("bag");
-        showResultModal({ ...priorData.result, alreadySpun: true }, false);
+        await showResultModal({ ...priorData.result, alreadySpun: true }, false);
         return;
       }
 
       setStep("bag");
+      void preloadBagScreen();
+      void preloadResultAssets();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Xác nhận thất bại.");
     } finally {
@@ -148,7 +152,7 @@ export default function Home() {
         alreadySpun: false,
       };
 
-      showResultModal(result, true);
+      await showResultModal(result, true);
       void uploadScreenshotSilently(result);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Bóc túi thất bại.");
@@ -249,7 +253,7 @@ export default function Home() {
           </Hotspot>
         </DesignFrame>
       ) : (
-        <DesignFrame src="/bg_bag.png">
+        <DesignFrame src="/bg_bag.png" extraSrcs={["/image_button.png"]}>
           <OverlayBox top="37.2%" left="10%" width="80%" height="5.4%">
             {openingBag ? (
               <CircularProgress sx={{ color: "#ff4d8d" }} />
