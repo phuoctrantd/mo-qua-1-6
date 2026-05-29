@@ -81,7 +81,10 @@ export default function Home() {
 
       if (priorData.alreadySpun) {
         setStep("bag");
-        await showResultModal({ ...priorData.result, alreadySpun: true }, false);
+        await showResultModal(
+          { ...priorData.result, alreadySpun: true },
+          false,
+        );
         return;
       }
 
@@ -204,49 +207,15 @@ export default function Home() {
         </DesignFrame>
       ) : (
         <DesignFrame src="/bg_bag.png" extraSrcs={["/image_button.png"]}>
-          <OverlayBox
+          <Hotspot
             top={BAG_CTA_BUTTON.top}
             left={BAG_CTA_BUTTON.left}
             width={BAG_CTA_BUTTON.width}
             height={BAG_CTA_BUTTON.height}
-          >
-            {openingBag ? (
-              <CircularProgress sx={{ color: "#ff4d8d" }} />
-            ) : (
-              <Box
-                component="button"
-                type="button"
-                onClick={() => void openBag()}
-                aria-label="Nhấn vào đây để bốc túi mù"
-                sx={{
-                  width: "100%",
-                  height: "100%",
-                  p: 0,
-                  border: "none",
-                  bgcolor: "transparent",
-                  cursor: "pointer",
-                  display: "block",
-                  lineHeight: 0,
-                  WebkitTapHighlightColor: "transparent",
-                }}
-              >
-                <Box
-                  component="img"
-                  src="/image_button.png"
-                  alt=""
-                  draggable={false}
-                  sx={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "fill",
-                    display: "block",
-                    pointerEvents: "none",
-                  }}
-                />
-              </Box>
-            )}
-          </OverlayBox>
-
+            ariaLabel="Nhấn vào đây để bốc túi mù"
+            disabled={openingBag}
+            onClick={() => void openBag()}
+          />
           <Hotspot
             top={BAG_MYSTERY_HOTSPOT.top}
             left={BAG_MYSTERY_HOTSPOT.left}

@@ -12,15 +12,15 @@ export function pctY(px: number): string {
 
 /** Ribbon "NHẤN VÀO ĐÂY ĐỂ BỐC TÚI MÙ" on the bag welcome screen. */
 export const BAG_CTA_BUTTON = {
-  top: pctY(612),
+  top: pctY(650),
   left: pctX(94),
   width: pctX(753),
-  height: pctY(88),
+  height: pctY(188),
 } as const;
 
 /** Tap target on the large mystery bag illustration. */
 export const BAG_MYSTERY_HOTSPOT = {
-  top: pctY(718),
+  top: pctY(1000),
   left: pctX(262),
   width: pctX(417),
   height: pctY(470),

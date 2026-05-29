@@ -57,7 +57,11 @@ type DesignFrameProps = {
 };
 
 /** Full-screen portrait frame; background image uses cover (no side gaps on mobile). */
-export function DesignFrame({ src, extraSrcs = [], children }: DesignFrameProps) {
+export function DesignFrame({
+  src,
+  extraSrcs = [],
+  children,
+}: DesignFrameProps) {
   const assetsKey = [src, ...extraSrcs].join("|");
   const [ready, setReady] = useState(false);
 
@@ -164,7 +168,13 @@ export function Hotspot({
   );
 }
 
-export function OverlayBox({ top, left, width, height, children }: OverlayBoxProps) {
+export function OverlayBox({
+  top,
+  left,
+  width,
+  height,
+  children,
+}: OverlayBoxProps) {
   return (
     <Box
       sx={{
@@ -212,7 +222,8 @@ export function PinkButton({
         borderRadius: "999px",
         cursor: disabled ? "not-allowed" : "pointer",
         opacity: disabled ? 0.65 : 1,
-        background: "linear-gradient(180deg, #ff9ec8 0%, #ff5a9a 45%, #e91e7a 100%)",
+        background:
+          "linear-gradient(180deg, #ff9ec8 0%, #ff5a9a 45%, #e91e7a 100%)",
         boxShadow:
           "0 0.4cqw 0 #c2185b, 0 0.8cqw 2cqw rgba(233, 30, 122, 0.35), inset 0 0.2cqw 0 rgba(255,255,255,0.35)",
         color: "#fff",
@@ -227,7 +238,8 @@ export function PinkButton({
         py: "1.2cqw",
         "&:active:not(:disabled)": {
           transform: "translateY(0.2cqw)",
-          boxShadow: "0 0.2cqw 0 #c2185b, 0 0.4cqw 1.2cqw rgba(233, 30, 122, 0.3)",
+          boxShadow:
+            "0 0.2cqw 0 #c2185b, 0 0.4cqw 1.2cqw rgba(233, 30, 122, 0.3)",
         },
       }}
     >
