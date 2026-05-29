@@ -32,7 +32,7 @@ export const designFrameShellSx = {
   bgcolor: "#87CEEB",
 } as const;
 
-export function FrameLoading() {
+export function FrameLoading({ overlay = false }: { overlay?: boolean }) {
   return (
     <Box
       sx={{
@@ -42,7 +42,14 @@ export function FrameLoading() {
         alignItems: "center",
         justifyContent: "center",
         zIndex: 20,
-        bgcolor: "#87CEEB",
+        ...(overlay
+          ? {
+              bgcolor: "rgba(255, 255, 255, 0.55)",
+              backdropFilter: "blur(3px)",
+            }
+          : {
+              bgcolor: "#87CEEB",
+            }),
       }}
     >
       <CircularProgress size={48} sx={{ color: "#ff4d8d" }} />

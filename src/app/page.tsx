@@ -11,7 +11,12 @@ import {
   DOB_INPUT,
 } from "@/lib/design-layout";
 import { preloadBagScreen, preloadResultAssets } from "@/lib/preload-images";
-import { DesignFrame, Hotspot, OverlayBox } from "@/components/DesignFrame";
+import {
+  DesignFrame,
+  FrameLoading,
+  Hotspot,
+  OverlayBox,
+} from "@/components/DesignFrame";
 import { WinModal } from "@/components/WinModal";
 import type { SpinResult } from "@/lib/types";
 
@@ -207,6 +212,7 @@ export default function Home() {
         </DesignFrame>
       ) : (
         <DesignFrame src="/bg_bag.png" extraSrcs={["/image_button.png"]}>
+          {openingBag && <FrameLoading overlay />}
           <Hotspot
             top={BAG_CTA_BUTTON.top}
             left={BAG_CTA_BUTTON.left}
